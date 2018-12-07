@@ -1,0 +1,6 @@
+indexes:
+- kind: "NpsResponse"
+  properties:
+  - name: "email"
+  - name: "timestamp"
+    direction: desc
