@@ -24,12 +24,13 @@ npm run generate-docs
 
 Run datastore emulator locally
 ```sh
+gcloud beta emulators datastore env-init
 gcloud beta emulators datastore start
-$(gcloud beta emulators datastore env-init)
 ```
 
 Start a dev server on port 8080 with auto-reload
 ```sh
+export DATASTORE_EMULATOR_HOST=localhost:<PORT where datastore emulator is running>
 npm run start-dev
 ```
 

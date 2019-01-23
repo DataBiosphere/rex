@@ -70,6 +70,7 @@ app.post('/api/npsResponses/create', promiseHandler(async req => {
   if (errors) {
     throw new Response(400, errors)
   }
+  console.log('Creating NPS response for: ' + email)
   await datastore.save({
     key: datastore.key('NpsResponse'),
     data: { ...data, email, timestamp: new Date() }
@@ -91,6 +92,7 @@ app.get('/api/npsResponses/lastTimestamp', promiseHandler(async req => {
     .order('timestamp', { descending: true })
     .limit(1)
   const [entities] = await datastore.runQuery(query)
+  console.log('Checking timestamp for: ' + email)
   return new Response(200, { timestamp: entities[0] && entities[0].timestamp })
 }))
 
