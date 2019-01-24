@@ -95,29 +95,24 @@ app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
     throw new Response(400, errors)
   }
 
-  // First, query to see if the user has firstTimestamp. If there is a firstTimestamp, then return the firstTimestamp
   const query = datastore.createQuery('FirstTimestamp')
     .filter('email', email)
-    .order('timestamp') // by default should be ascending, so earliest date is first
-    .limit(1) //each user will have one first visit to Terra
+    .order('timestamp')
+    .limit(1)
   const [entities] = await datastore.runQuery(query)
 
-  const currTime = req.body['body'] //get just the current timestamp sent from Terra
-
   if (entities.length === 1) {
-    console.log(entities)
-    //console.log(email + ' is not new here and first visited on ' + entities[0].timestamp)
-    return new Response(201, { firstTimestamp: 'this email first visited on: ' + entities[0].timestamp })
+    console.log(email + ' first visited on ' + entities[0].timestamp)
+    return new Response(201, { firstTimestamp: email + ' first visited on: ' + entities[0].timestamp })
   } else {
-    // Second, if there are no firstTimestamp, then create the firstTimestamp with currTimestamp. Then return firstTimestamp
+    const currTime = req.body['body']
     await datastore.save({
       key: datastore.key('FirstTimestamp'),
       data: { ...data, email, timestamp: currTime }
     })
     console.log(email + ' first visited on ' + currTime)
-    return new Response(201, { firstTimestamp: 'this email first visited on: ' + currTime })
+    return new Response(201, { firstTimestamp: email + ' first visited on: ' + currTime })
   }
-
 }))
 
 /**
