@@ -4,3 +4,7 @@ indexes:
   - name: "email"
   - name: "timestamp"
     direction: desc
+- kind: "FirstTimestamp"
+  properties:
+  - name: "email"
+  - name: "timestamp"
