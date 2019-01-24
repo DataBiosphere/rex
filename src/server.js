@@ -1,3 +1,4 @@
+/* eslint-disable multiline-comment-style,no-trailing-spaces */
 const express = require('express')
 const fetch = require('node-fetch')
 const cors = require('cors')
@@ -76,6 +77,47 @@ app.post('/api/npsResponses/create', promiseHandler(async req => {
     data: { ...data, email, timestamp: new Date() }
   })
   return new Response(201)
+}))
+
+/**
+ * @api {post} /api/npsResponses/firstTimestamp Record & return timestamp when user first accessed Terra
+ * @apiName firstVisitTimestamp
+ * @apiVersion 1.0.0
+ * @apiGroup Surveys
+ * @apiParam {String} currTimestamp Current timestamp; if first visit then will be recorded & returned as firstTimestamp
+ * @apiSuccess {String} firstTimestamp Timestamp when user first accessed Terra
+ */
+app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
+  const email = await validateUser(req)
+  const data = validate.cleanAttributes(req.body, npsConstraints)
+  const errors = validate(data, npsConstraints, { fullMessages: false })
+  if (errors) {
+    throw new Response(400, errors)
+  }
+
+  // First, query to see if the user has firstTimestamp. If there is a firstTimestamp, then return the firstTimestamp
+  const query = datastore.createQuery('FirstTimestamp')
+    .filter('email', email)
+    .order('timestamp') // by default should be ascending, so earliest date is first
+    .limit(1) //each user will have one first visit to Terra
+  const [entities] = await datastore.runQuery(query)
+
+  const currTime = req.body['body'] //get just the current timestamp sent from Terra
+
+  if (entities.length === 1) {
+    console.log(entities)
+    //console.log(email + ' is not new here and first visited on ' + entities[0].timestamp)
+    return new Response(201, { firstTimestamp: 'this email first visited on: ' + entities[0].timestamp })
+  } else {
+    // Second, if there are no firstTimestamp, then create the firstTimestamp with currTimestamp. Then return firstTimestamp
+    await datastore.save({
+      key: datastore.key('FirstTimestamp'),
+      data: { ...data, email, timestamp: currTime }
+    })
+    console.log(email + ' first visited on ' + currTime)
+    return new Response(201, { firstTimestamp: 'this email first visited on: ' + currTime })
+  }
+
 }))
 
 /**
