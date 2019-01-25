@@ -80,12 +80,12 @@ app.post('/api/npsResponses/create', promiseHandler(async req => {
 }))
 
 /**
- * @api {post} /api/npsResponses/firstTimestamp Record & return timestamp when user first accessed Terra
+ * @api {post} /api/npsResponses/firstTimestamp Record & return timestamp when user first accessed app
  * @apiName firstVisitTimestamp
  * @apiVersion 1.0.0
  * @apiGroup Surveys
  * @apiParam {String} currTimestamp Current timestamp; if first visit then will be recorded & returned as firstTimestamp
- * @apiSuccess {String} firstTimestamp Timestamp when user first accessed Terra
+ * @apiSuccess {String} firstTimestamp Timestamp when user first accessed app
  */
 app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
   const email = await validateUser(req)
@@ -103,7 +103,7 @@ app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
 
   if (entities.length === 1) {
     console.log(email + ' first visited on ' + entities[0].timestamp)
-    return new Response(201, { firstTimestamp: email + ' first visited on: ' + entities[0].timestamp })
+    return new Response(200, entities[0].timestamp)
   } else {
     const currTime = req.body['body']
     await datastore.save({
@@ -111,7 +111,7 @@ app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
       data: { ...data, email, timestamp: currTime }
     })
     console.log(email + ' first visited on ' + currTime)
-    return new Response(201, { firstTimestamp: email + ' first visited on: ' + currTime })
+    return new Response(200, currTime)
   }
 }))
 
@@ -130,7 +130,7 @@ app.get('/api/npsResponses/lastTimestamp', promiseHandler(async req => {
     .limit(1)
   const [entities] = await datastore.runQuery(query)
   console.log('Checking timestamp for: ' + email)
-  return new Response(200, { timestamp: entities[0] && entities[0].timestamp })
+  return new Response(entities[0] ? 200 : 204, entities[0] && entities[0].timestamp)
 }))
 
 app.listen(process.env.PORT || 8080)
