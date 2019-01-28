@@ -122,7 +122,7 @@ app.get('/api/npsResponses/lastTimestamp', promiseHandler(async req => {
     .order('timestamp', { descending: true })
     .limit(1)
   const [entities] = await datastore.runQuery(query)
-  console.log('Checking timestamp for: ' + email)
+  console.log(entities[0] ? email + ' last interacted with survey on ' + entities[0].timestamp : email + ' has not interacted with survey')
   return new Response(200, { timestamp: entities[0] && entities[0].timestamp })
 }))
 
