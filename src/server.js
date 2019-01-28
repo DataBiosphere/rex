@@ -1,4 +1,3 @@
-/* eslint-disable multiline-comment-style,no-trailing-spaces */
 const express = require('express')
 const fetch = require('node-fetch')
 const cors = require('cors')
