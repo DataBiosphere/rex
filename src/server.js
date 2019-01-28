@@ -80,14 +80,14 @@ app.post('/api/npsResponses/create', promiseHandler(async req => {
 }))
 
 /**
- * @api {post} /api/npsResponses/firstTimestamp Record & return timestamp when user first accessed app
+ * @api {post} /api/firstTimestamps/record Record & return timestamp when user first accessed app
  * @apiName firstVisitTimestamp
  * @apiVersion 1.0.0
- * @apiGroup Surveys
+ * @apiGroup Visits
  * @apiParam {String} currTimestamp Current timestamp; if first visit then will be recorded & returned as firstTimestamp
  * @apiSuccess {String} firstTimestamp Timestamp when user first accessed app
  */
-app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
+app.post('/api/firstTimestamps/record', promiseHandler(async req => {
   const email = await validateUser(req)
   const data = validate.cleanAttributes(req.body, npsConstraints)
   const errors = validate(data, npsConstraints, { fullMessages: false })
@@ -101,16 +101,16 @@ app.post('/api/npsResponses/firstTimestamp', promiseHandler(async req => {
     .limit(1)
   const [entities] = await datastore.runQuery(query)
 
-  if (entities.length === 1) {
+  if (entities.length) {
     console.log(email + ' first visited on ' + entities[0].timestamp)
-    return new Response(200, entities[0].timestamp)
+    return new Response(200, entities[0])
   } else {
     const currTime = req.body['body']
     await datastore.save({
       key: datastore.key('FirstTimestamp'),
-      data: { ...data, email, timestamp: currTime }
+      data: { email, timestamp: currTime }
     })
-    console.log(email + ' first visited on ' + currTime)
+    console.log(email + ' visits for the first time at ' + currTime)
     return new Response(200, currTime)
   }
 }))
