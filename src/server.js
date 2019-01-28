@@ -96,7 +96,7 @@ app.post('/api/firstTimestamps/record', promiseHandler(async req => {
 
   if (entities.length) {
     console.log(email + ' first visited on ' + entities[0].timestamp)
-    return new Response(200, entities[0])
+    return new Response(200, { timestamp: entities[0].timestamp })
   } else {
     const timestamp = new Date()
     await datastore.save({
