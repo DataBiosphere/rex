@@ -70,11 +70,42 @@ app.post('/api/npsResponses/create', promiseHandler(async req => {
   if (errors) {
     throw new Response(400, errors)
   }
+  console.log('Creating NPS response for: ' + email)
   await datastore.save({
     key: datastore.key('NpsResponse'),
     data: { ...data, email, timestamp: new Date() }
   })
   return new Response(201)
+}))
+
+/**
+ * @api {post} /api/firstTimestamps/record Record & return timestamp when user first accessed app
+ * @apiName firstVisitTimestamp
+ * @apiVersion 1.0.0
+ * @apiGroup Visits
+ * @apiSuccess (Success 200) timestamp Timestamp when user first accessed app
+ */
+app.post('/api/firstTimestamps/record', promiseHandler(async req => {
+  const email = await validateUser(req)
+
+  const query = datastore.createQuery('FirstTimestamp')
+    .filter('email', email)
+    .order('timestamp')
+    .limit(1)
+  const [entities] = await datastore.runQuery(query)
+
+  if (entities.length) {
+    console.log(email + ' first visited on ' + entities[0].timestamp)
+    return new Response(200, { timestamp: entities[0].timestamp })
+  } else {
+    const timestamp = new Date()
+    await datastore.save({
+      key: datastore.key('FirstTimestamp'),
+      data: { email, timestamp }
+    })
+    console.log(email + ' visits for the first time at ' + timestamp)
+    return new Response(200, { timestamp })
+  }
 }))
 
 /**
@@ -91,6 +122,7 @@ app.get('/api/npsResponses/lastTimestamp', promiseHandler(async req => {
     .order('timestamp', { descending: true })
     .limit(1)
   const [entities] = await datastore.runQuery(query)
+  console.log('Checking timestamp for: ' + email)
   return new Response(200, { timestamp: entities[0] && entities[0].timestamp })
 }))
 
