@@ -3,7 +3,7 @@ Survey response service
 
 ### Requirements
 - Docker
-- Node 8
+- Node 10
 - Google cloud SDK
 
 ### Developing
