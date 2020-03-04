@@ -14,7 +14,7 @@ yarn install
 
 Write config file
 ```sh
-cp config.dev.json config.json
+cp config/dev.json config.json
 ```
 
 Build docs
