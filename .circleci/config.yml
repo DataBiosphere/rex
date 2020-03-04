@@ -3,14 +3,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:8
+      - image: node:12
     steps:
       - checkout
       - restore_cache:
-          key: v1-{{ checksum "package-lock.json" }}
-      - run: npm install
+          key: v2-{{ checksum "yarn.lock" }}
+      - run: yarn install
       - save_cache:
-          key: v1-{{ checksum "package-lock.json" }}
+          key: v2-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
-      - run: npm run lint
+      - run: yarn lint
