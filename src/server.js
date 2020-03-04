@@ -3,7 +3,7 @@ const fetch = require('node-fetch')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const validate = require('validate.js')
-const Datastore = require('@google-cloud/datastore')
+const { Datastore } = require('@google-cloud/datastore')
 const { Response, promiseHandler } = require('./utils')
 const { samRoot } = require('../config')
 

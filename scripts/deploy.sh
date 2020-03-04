@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 cp config.$TERRA_ENV.json config.json
-npm install
-npm run lint
-npm run generate-docs
+yarn install
+yarn lint
+yarn generate-docs
 gcloud app deploy --project=terra-rex-$TERRA_ENV
